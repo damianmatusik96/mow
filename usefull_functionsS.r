@@ -31,17 +31,20 @@ get_neighbours <- function(data,
                           queries,
                           amount_of_neighbours,
                           measure="euclidean") {
-  
-  query <- queries
-  
+
   neighbours <- knn(data@train_data, 
-                    query[,2:(ncol(query))], 
+                    queries[,2:(ncol(query))], 
                     categorical_target = "quality", 
                     k = amount_of_neighbours, 
                     comparison_measure=measure,
                     return_ranked_neighbors = amount_of_neighbours, 
                     id = 'id')
   return(neighbours)
+}
+
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
 # Rysowanie drzewka
