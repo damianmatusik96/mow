@@ -81,6 +81,6 @@ tree_predict <- function(data,query) {
                method="class", data=data, control=rpart.control(minsplit=5))
   
   result <- predict(fit, query, type="class")
-  result <- as.numeric(colnames(result)[apply(result,1,which.max)])
+  result <- as.numeric(levels(result))[result]
   return(result)
 }
