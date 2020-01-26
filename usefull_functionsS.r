@@ -1,7 +1,7 @@
 prepare_data <- function(x){
-  #normalizuje
-  xx <- normalize(x[,1:ncol(x)-1], method = 'range', range= c(0,1), on.constant = 'quiet')
-  x <- cbind(xx,x[,ncol(x)])
+  # #normalizuje
+  # xx <- normalize(x[,1:ncol(x)-1], method = 'range', range= c(0,1), on.constant = 'quiet')
+  # x <- cbind(xx,x[,ncol(x)])
   names(x)[ncol(x)]<-paste("quality")
   # Dodaje id
   id <- c(1:nrow(x))
@@ -16,7 +16,7 @@ prepare_data <- function(x){
   # Usuwam klase
   test_data <- test_data_with_class[,1:(ncol(x) - 1)]
   
-
+  
   return(new("DataObject",
              train_data=train_data, 
              test_data=test_data, 
@@ -28,9 +28,9 @@ random_rows <- function(df, n){
 }
 
 get_neighbours <- function(data,
-                          queries,
-                          amount_of_neighbours,
-                          measure="euclidean") {
+                           queries,
+                           amount_of_neighbours,
+                           measure="tanimoto") {
 
   neighbours <- knn(data@train_data, 
                     queries[,2:(ncol(query))], 
@@ -42,11 +42,6 @@ get_neighbours <- function(data,
   return(neighbours)
 }
 
-getmode <- function(v) {
-  uniqv <- unique(v)
-  uniqv[which.max(tabulate(match(v, uniqv)))]
-}
-
 # Rysowanie drzewka
 
 draw_tree <- function(fit) {
@@ -56,7 +51,7 @@ draw_tree <- function(fit) {
   summary(fit) # detailed summary of splits
   # plot tree
   plot(fit, uniform=TRUE,
-     main="Classification Tree for Kyphosis")
+       main="Classification Tree for Kyphosis")
   text(fit, use.n=TRUE, all=TRUE, cex=.8)
 }
 #
@@ -82,10 +77,10 @@ svm_predict <- function(data, query) {
 }
 
 tree_predict <- function(data,query) {
-    fit <- rpart(quality~.,
-                 method="class", data=data, control=rpart.control(minsplit=5))
-
-    result <- predict(fit, query, type="prob")
-    result <- as.numeric(colnames(result)[apply(result,1,which.max)])
-    return(result)
+  fit <- rpart(quality~.,
+               method="class", data=data, control=rpart.control(minsplit=5))
+  
+  result <- predict(fit, query, type="class")
+  result <- as.numeric(colnames(result)[apply(result,1,which.max)])
+  return(result)
 }
